@@ -11,6 +11,7 @@ import (
 	"embed"
 	"fmt"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -64,8 +65,14 @@ func main() {
 		router = RunServer(router, filebasedDb)
 		router = RunClient(router, Resources, filebasedDb)
 
-		fmt.Println("Server is running on port 8080")
-		err = router.Run(":8080")
+		// Get port from environment variable (for Railway, Render, etc.)
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "8080" // Default to 8080 for local development
+		}
+
+		fmt.Printf("Server is running on port %s\n", port)
+		err = router.Run(":" + port)
 		if err != nil {
 			panic(err)
 		}
